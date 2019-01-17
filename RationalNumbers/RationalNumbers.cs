@@ -5,7 +5,7 @@ public static class RealNumberExtension
 {
     public static double Expreal(this int realNumber, RationalNumber r)
     {
-        throw new NotImplementedException("You need to implement this extension method.");
+        return Math.Pow(r.Expreal(realNumber), r.ExprealPow());
     }
 }
 
@@ -13,6 +13,7 @@ public struct RationalNumber
 {
     private int _numerator;
     private int _denominator;
+    
 
     public RationalNumber(int numerator, int denominator)
     {
@@ -23,7 +24,7 @@ public struct RationalNumber
     public RationalNumber Add(RationalNumber r)
     {
         return new RationalNumber((_numerator * r._denominator) + (r._numerator * _denominator), 
-                                  (_denominator != r._denominator) ? (_denominator * r._denominator) : _denominator).Reduce();
+                                  (_denominator * r._denominator)).Reduce();
 
     }
 
@@ -35,7 +36,7 @@ public struct RationalNumber
     public RationalNumber Sub(RationalNumber r)
     {
         return new RationalNumber((_numerator * r._denominator) - (r._numerator * _denominator),
-                                  (_denominator != r._denominator) ? (_denominator * r._denominator) : _denominator).Reduce();
+                                  _denominator * r._denominator).Reduce();
     }
 
     public static RationalNumber operator -(RationalNumber r1, RationalNumber r2)
@@ -58,14 +59,7 @@ public struct RationalNumber
         if ((_numerator * r._numerator) == 0)
             throw new DivideByZeroException("Cannot have 0 as denominator when dividing rational numbers");
 
-        if (r._numerator < 0 || _denominator < 0)
-        {
-            return new RationalNumber((_numerator * r._denominator)/-1, (r._numerator * _denominator)/-1).Reduce();
-        }
-        else
-        {
-            return new RationalNumber(_numerator * r._denominator, r._numerator * _denominator).Reduce();
-        }
+        return new RationalNumber(_numerator * r._denominator, r._numerator * _denominator).Reduce();
     }
 
     public static RationalNumber operator /(RationalNumber r1, RationalNumber r2)
@@ -88,9 +82,17 @@ public struct RationalNumber
 
     public RationalNumber Reduce()
     {
-        int gcd = Math.Abs(_numerator) > Math.Abs(_denominator) ? GreatestCommonDivisor(Math.Abs(_numerator), Math.Abs(_denominator)) : GreatestCommonDivisor(Math.Abs(_denominator), Math.Abs(_numerator));
+        //int gcd = _numerator > _denominator ? GreatestCommonDivisor(_numerator, _denominator) : GreatestCommonDivisor(_denominator, _numerator);
+        int gcd = GreatestCommonDivisor(_numerator, _denominator);
         _numerator /= gcd;
         _denominator /= gcd;
+
+        if(_denominator < 0)
+        {
+            _numerator = -_numerator;
+            _denominator = -_denominator;
+        }
+
         return this;
     }
 
@@ -122,6 +124,11 @@ public struct RationalNumber
 
     public double Expreal(int baseNumber)
     {
-        throw new NotImplementedException("You need to implement this function.");
+        return Math.Pow((double)baseNumber, (1.0 / _denominator));
+    }
+
+    public int ExprealPow()
+    {
+        return _numerator;
     }
 }
